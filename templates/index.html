@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link href="https://api.optixapp.com/ui-kit/optix-ui-kit.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://api.optixapp.com/ui-kit/optix-ui-kit.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vuetify@1.5.24/dist/vuetify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@1.5.24/dist/vuetify.min.js"></script>
+
+    <style>
+        input[type="file"] {
+          display: block;
+          margin-top: 20px;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="app" class="optix-show-on-load">
+      <optix-app>
+        <optix-container>
+          <br>
+          <h1>Choose a file to Print</h1>
+          <br>
+          <v-alert type="info" v-model="alertVisible">Please wait, your file is being sent to the printer.</v-alert>
+          <!--
+          <v-alert type="success" v-model="successVisible">Your file has successfully been sent. Please allow time to print.</v-alert>
+          <v-alert type="error" v-model="errorVisible">You have no active plan to print with.</v-alert>
+           -->
+          {% if error_message %}
+          <v-alert type="error" v-model="errorVisible">{{ error_message }}</v-alert>
+          {% endif %}
+          {% if success_message %}
+          <v-alert type="success" v-model="successVisible">{{ success_message }}</v-alert>
+          {% endif %}
+          {% if warning_message %}
+          <v-alert type="warning" v-model="warningVisible">{{ warning_message }}</v-alert>
+          {% endif %}
+          <!-- <h2 v-if="showLogin">Please log in using your Optix email to print</h2>
+          <br v-if="showLogin">
+          <v-form v-if="showLogin">
+              <v-text-field
+                label="Email"
+                v-model="email"
+              ></v-text-field>
+              <v-btn @click="login" color="primary">Login</v-btn>
+          </v-form> -->
+
+
+
+
+          <form action="/" method="post" enctype="multipart/form-data" id="printForm" v-if="formVisible" ref="printForm">
+            <input type="file" name="file" accept="image/*, .pdf" required>
+            <br>
+            <input type="hidden" name="token" value="" v-model="token">
+            <input type="hidden" name="printer" value="" v-model="selectedPrinter">
+            <input type="hidden" name="email" value="" v-model="email">
+            
+            <v-text-field
+              label="Optix Email Address"
+              v-model="email"
+              v-if="requiredEmail"
+              :rules="[email => !!email || 'Email is required', email => /.+@.+\..+/.test(email) || 'Email must be valid']"
+              ></v-text-field>
+            <br v-if="requiredEmail">
+            <v-select
+            :items="items"
+            label="Select Printer"
+            v-model="selectedPrinter"
+            ></v-select>
+            <br>
+            <input type="hidden" id="doubleSided" name="duplex" value="" v-model="doubleSided">
+            <v-switch
+              v-model="doubleSided"
+              label="Double-sided"
+            ></v-switch>
+            <input type="hidden" id="color" name="color" value="" v-model="inColor">
+            <v-switch
+              v-model="inColor"
+              label="Print in Color"
+            ></v-switch>
+            <!-- <label for="doubleSided">Double-sided</label><br> -->
+            <br>
+            <input type="hidden" id="copies" name="copies" v-model="copies">
+            <!-- <label for="copies">Number of Copies</label><br><br> -->
+            <v-text-field
+              label="Copies"
+              placeholder="1"
+              type="number"
+              min="1"
+              max="10"
+              v-model="copies"
+            ></v-text-field>
+            <br>
+            <v-btn @click="formSubmitted" type="submit" value="Upload and Print" color="primary">Send to Printer</v-btn>
+        </form>
+    </optix-container>
+    </optix-app>
+    </div>
+          
+
+    <script>
+      var vue = new Vue({
+        el: '#app',
+        data: {
+          selectedPrinter: 'printer1',
+          alertVisible: false,
+          successVisible: true,
+          warningVisible: true,
+          errorVisible: true,
+          formVisible: false,
+          doubleSided: true,
+          email: '',
+          requiredEmail: false,
+          inColor: true,
+          copies: 1,
+          token: '',
+          items: [
+          ],
+            
+        },
+        methods: {
+          async loadPrinters(){
+              fetch('/printers').then( (response) => {
+                 response.json().then((json_list) => { this.items = json_list; this.selectedPrinter = this.items[0]; });
+            });
+          },
+          async formSubmitted() {
+            const form = this.$refs.printForm;
+            if (!form.checkValidity() || (this.requiredEmail && !/.+@.+\..+/.test(this.email))) {
+              return;
+            }
+            this.alertVisible = true;
+            
+            // this.alertVisible = true;
+          }
+        },
+        mounted() {
+          this.$optix.init();
+          this.loadPrinters();
+          // if ({{ error }}) {
+          //   this.errorVisible = true;
+          // }
+          this.token = window.location.search != '' ? window.location.search.split('token=')[1].split('&')[0] : '';
+           this.$optix.graphQL(
+              `query {
+                me {
+                  user {
+                    has_plans
+                  }
+                }
+              }`)
+              .then(result => {
+                
+                // if (result == null || result.data == null) {
+                //   this.errorVisible = true;
+                //   console.log("Error fetching user data");
+                //   return;
+                // }
+                const response = result.data;
+                // if(response.data.me == null) {
+                //   this.errorVisible = true;
+                //   console.log("Error fetching user data: me is null");
+                //   return;
+                // }
+                const has_plans = response.data.me.user.has_plans;
+                if (!has_plans) {
+                   this.formVisible = false;
+                   this.errorVisible = true;
+                    console.log("User does not have plans");
+                }
+                this.formVisible = true;
+                
+                
+              }).catch(error => {
+                // this.errorVisible = true;
+                this.formVisible = true;
+                this.requiredEmail = true;
+                console.log("Error fetching user data: " + error);
+              });
+
+
+        }
+      });
+      
+      
+      
+        
+
+    </script>
+    <script defer>
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+    <title>Stats</title>
+</head>
+<body>
+    <div class="toast toast-primary" id="toast" style="display: none;">
+        <button id="toastButton" class="btn btn-clear float-right"></button>
+            <span id="toastMessage"></span>
+    </div>
+    <form action="/stats" method="post">
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon addon-lg">Time Span</span>
+                <input type="date" class="form-input input-lg" id="startDate" name="startDate", value="{{ start_date }}">
+                <input type="date" class="form-input input-lg" id="endDate" name="endDate", value="{{ end_date }}">
+                <input type="hidden" name="token" value="{{ token }}">
+                <span class="input-group-btn">
+                    <input type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                </span>
+            </div>
+        </div>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Pages</th>
+                <th>Quota</th>
+                <th>Paid Quota</th>
+                <th>Quantity</th>
+                <th>Adjust</th>
+            </tr>
+        </thead>
+        {% if stats is not none %}
+        <tbody id="statsTableBody">
+            {% for stat in stats %}
+            <tr>
+                <td>{{ stat.name }}</td>
+                <td>{{ stat.pages_printed }}</td>
+                <td>{{ stat.quota }}</td>
+                <td>{{ stat.paid_quota }}</td>
+                <form action="/adjust_quota" method="post">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <input type="hidden" name="user_id" value="{{ stat.user_id }}">
+                    <td><input type="number" name="quantity" class="form-input"></td>
+                    <td><input type="submit" class="btn btn-primary"></td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+</body>
+
+<script defer>
+document.getElementById("toastButton").addEventListener("click", function() {
+    document.getElementById("toast").style.display = "none";
+});
+
+{% if message is not none %}
+    document.getElementById("toastMessage").textContent = "{{ message }}";
+    document.getElementById("toast").style.display = "block";
+{% endif %}
+
+</script>
+</html>

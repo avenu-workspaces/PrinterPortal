@@ -1,0 +1,8 @@
+.vscode/
+*.exe
+*.sqlite
+temp/
+__pycache__/
+*.txt
+*.bat
+*.ini

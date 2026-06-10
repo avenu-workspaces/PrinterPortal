@@ -303,7 +303,7 @@ def index():
         copies = int(request.form.get('copies', 1))
         token = request.form.get('token', '')
 
-        if not file.filename.split('.')[1] in accepted_extensions:
+        if not file.filename.split('.')[-1] in accepted_extensions:
             return render_template('index.html', error_message="File type must be one of the following " + ', '.join(accepted_extensions))
 
         duplex = request.form.get('duplex', 'off') == 'true'

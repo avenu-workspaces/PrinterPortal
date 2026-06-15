@@ -49,7 +49,7 @@
 
 
 
-          <form action="/" method="post" enctype="multipart/form-data" id="printForm" v-if="formVisible" ref="printForm">
+          <form id="printForm" action="/" method="post" enctype="multipart/form-data" id="printForm" v-if="formVisible" ref="printForm">
             <input type="file" name="file" accept="image/*, .pdf" required>
             <br>
             <input type="hidden" name="token" value="" v-model="token">
@@ -92,7 +92,7 @@
               v-model="copies"
             ></v-text-field>
             <br>
-            <v-btn @click="formSubmitted" type="submit" value="Upload and Print" color="primary">Send to Printer</v-btn>
+            <v-btn @click="formSubmitted"  value="Upload and Print" color="primary">Send to Printer</v-btn>
         </form>
     </optix-container>
     </optix-app>
@@ -131,8 +131,10 @@
               return;
             }
             this.alertVisible = true;
-            
-            // this.alertVisible = true;
+
+
+            form.requestSubmit();
+
           }
         },
         mounted() {

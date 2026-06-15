@@ -23,6 +23,7 @@
           <h1>Choose a file to Print</h1>
           <br>
           <v-alert type="info" v-model="alertVisible">Please wait, your file is being sent to the printer.</v-alert>
+          <v-alert type="error" v-model="formError">Please check to make sure your information is correct.</v-alert>
           <!--
           <v-alert type="success" v-model="successVisible">Your file has successfully been sent. Please allow time to print.</v-alert>
           <v-alert type="error" v-model="errorVisible">You have no active plan to print with.</v-alert>
@@ -106,6 +107,7 @@
           selectedPrinter: 'printer1',
           alertVisible: false,
           successVisible: true,
+          formError: false,
           warningVisible: true,
           errorVisible: true,
           formVisible: false,
@@ -128,6 +130,7 @@
           async formSubmitted() {
             const form = this.$refs.printForm;
             if (!form.checkValidity() || (this.requiredEmail && !/.+@.+\..+/.test(this.email))) {
+              this.formError = true;
               return;
             }
             this.alertVisible = true;

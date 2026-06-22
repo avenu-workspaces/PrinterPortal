@@ -124,7 +124,7 @@
         methods: {
           async loadPrinters(){
               fetch('/printers').then( (response) => {
-                 response.json().then((json_list) => { this.items = json_list; this.selectedPrinter = this.items[0]; });
+                 response.json().then((json_list) => { this.items = json_list; });
             });
           },
           async formSubmitted() {

@@ -54,11 +54,11 @@
             {% endfor %}
         </tbody>
         {% endif %}
-    <div class="modal active" id="modal-id">
-    <a href="#close" class="modal-overlay" aria-label="Close"></a>
+    <div class="modal" id="modal">
+    <a href="#close" onclick="closeModal()" class="modal-overlay" aria-label="Close"></a>
     <div class="modal-container">
         <div class="modal-header">
-        <a id="closeSettings" class="btn btn-clear float-right" aria-label="Close"></a>
+        <a id="closeSettings" onclick="closeModal()" class="btn btn-clear float-right" aria-label="Close"></a>
         <div class="modal-title h5">Printer Portal Settings</div>
         </div>
         <div class="modal-body">
@@ -86,19 +86,30 @@
         </div> -->
     </div>
     </div>
-    <button style="position: fixed; bottom:1em;left:1em;" class="btn btn-primary btn-lg btn-action settings"><i class="icon icon-more-horiz"></i> </button>
+    <button onclick="openModal()" style="position: fixed; bottom:1em;left:1em;" class="btn btn-primary btn-lg btn-action settings"><i class="icon icon-more-horiz"></i> </button>
 </body>
 
 <script defer>
+modal = document.getElementById("modal")
+
 document.getElementById("toastButton").addEventListener("click", function() {
     document.getElementById("toast").style.display = "none";
 });
 
+function closeModal(){
+    modal.classList.remove("active")
+}
+function openModal(){
+    modal.classList.add("active")
+}
+
+
+
+</script>
+<!-- 
 {% if message is not none %}
     document.getElementById("toastMessage").textContent = "{{ message }}";
     document.getElementById("toast").style.display = "block";
 {% endif %}
-
-
-</script>
+ -->
 </html>

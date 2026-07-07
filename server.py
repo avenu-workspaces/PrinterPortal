@@ -362,8 +362,8 @@ def index():
         )
 
 
-        return render_template('index.html', success_message="Your file has successfully been sent to the printer. Please allow time for it to print.", warning_message=warning_message)
-    return render_template('index.html')
+        return render_template('index.html', max_copies=config['PRINT_CONFIG']['MAX_COPIES'], success_message="Your file has successfully been sent to the printer. Please allow time for it to print.", warning_message=warning_message)
+    return render_template('index.html', max_copies=config['PRINT_CONFIG']['MAX_COPIES'])
                            
 
 

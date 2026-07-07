@@ -158,8 +158,8 @@ def log_print(email, user_id, name, printer, pages, file_name, color, copies, du
 
 
 def print_pdf(file_path, printer_name, copies=1, duplex=True, color=False):
-    if copies > 10:
-        copies = 10 # Limit the number of copies to prevent abuse
+    if copies > config.getint('PRINT_CONFIG', 'MAX_COPIES'):
+        copies = config.getint('PRINT_CONFIG', 'MAX_COPIES')
     elif copies < 1:
         copies = 1
     cmd = [
@@ -367,7 +367,7 @@ def index():
                            
 
 
-# |------------------------------- STATS -----------------------------| #
+# |------------------------------- STATS / ADMIN -----------------------------| #
 # @app.route('/pages_printed', methods=['GET'])
 def stats(start_date, end_date):
     # start_date = request.args.get('start_date')
@@ -448,9 +448,24 @@ def stats_page():
     end_date = date.today()
     start_date = date(end_date.year, end_date.month, 1)
     stats_data = stats(start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
-    return render_template('stats.html', stats=stats_data, start_date=start_date.strftime("%Y-%m-%d"), end_date=end_date.strftime("%Y-%m-%d"), token=token, message=message)
+    return render_template('stats.html', stats=stats_data, start_date=start_date.strftime("%Y-%m-%d"), end_date=end_date.strftime("%Y-%m-%d"), token=token, message=message, max_copies=config['PRINT_CONFIG']['MAX_COPIES'], monthly_quota=config['PRINT_CONFIG']['MONTHLY_QUOTA'])
 
 
+@app.route('/update_settings', methods=['POST'])
+def update_settings():
+    token = request.form.get('token', '')
+    if not token or not is_admin(token):
+        return redirect(url_for('index'))
+    
+    config['PRINT_CONFIG']['MAX_COPIES'] = request.form.get('max_copies', config['PRINT_CONFIG']['MAX_COPIES'])
+    config['PRINT_CONFIG']['MONTHLY_QUOTA'] = request.form.get('monthly_quota', config['PRINT_CONFIG']['MONTHLY_QUOTA'])
+
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
+    
+    return redirect(url_for('stats_page', token=token, message="Settings updated successfully."))
+    
+    
 
 
 if not os.path.exists(config['PATHS']['TEMP_DIR']):

@@ -54,6 +54,39 @@
             {% endfor %}
         </tbody>
         {% endif %}
+    <div class="modal active" id="modal-id">
+    <a href="#close" class="modal-overlay" aria-label="Close"></a>
+    <div class="modal-container">
+        <div class="modal-header">
+        <a id="closeSettings" class="btn btn-clear float-right" aria-label="Close"></a>
+        <div class="modal-title h5">Printer Portal Settings</div>
+        </div>
+        <div class="modal-body">
+        <div class="content">
+            <form action="./update_settings" method="post">
+                <input type="hidden" name="token" value="{{ token }}">
+                <div class="form-group">
+                    <label class="form-label" for="">Monthly Quota</label>
+                    <input class="form-input" type="number" id="monthlyQuota" name="quota" placeholder="Quota" value="{{ monthly_quota }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="">Max Copies</label>
+                    <input class="form-input" type="number" id="monthlyQuota" name="quota" placeholder="Quota" value="{{ monthly_quota }}">
+                </div>
+                <span class="input-group-btn">
+                    
+                    <input type="submit" class="btn btn-primary btn-lg">
+
+                </span>
+            </form>
+        </div>
+        </div>
+        <!-- <div class="modal-footer">
+        ...
+        </div> -->
+    </div>
+    </div>
+    <button style="position: fixed; bottom:1em;left:1em;" class="btn btn-primary btn-lg btn-action settings"><i class="icon icon-more-horiz"></i> </button>
 </body>
 
 <script defer>
@@ -65,6 +98,7 @@ document.getElementById("toastButton").addEventListener("click", function() {
     document.getElementById("toastMessage").textContent = "{{ message }}";
     document.getElementById("toast").style.display = "block";
 {% endif %}
+
 
 </script>
 </html>

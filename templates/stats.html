@@ -66,12 +66,12 @@
             <form action="./update_settings" method="post">
                 <input type="hidden" name="token" value="{{ token }}">
                 <div class="form-group">
-                    <label class="form-label" for="">Monthly Quota</label>
+                    <label class="form-label" for="monthlyQuota">Monthly Quota</label>
                     <input class="form-input" type="number" id="monthlyQuota" name="quota" placeholder="Quota" value="{{ monthly_quota }}">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="">Max Copies</label>
-                    <input class="form-input" type="number" id="monthlyQuota" name="quota" placeholder="Quota" value="{{ monthly_quota }}">
+                    <label class="form-label" for="maxCopies">Max Copies</label>
+                    <input class="form-input" type="number" id="maxCopies" name="max_copies" placeholder="Max Copies" value="{{ max_copies }}">
                 </div>
                 <span class="input-group-btn">
                     
@@ -103,13 +103,11 @@ function openModal(){
     modal.classList.add("active")
 }
 
-
-
-</script>
-<!-- 
 {% if message is not none %}
     document.getElementById("toastMessage").textContent = "{{ message }}";
     document.getElementById("toast").style.display = "block";
 {% endif %}
- -->
+
+</script>
+
 </html>

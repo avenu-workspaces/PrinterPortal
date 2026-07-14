@@ -157,7 +157,7 @@ def log_print(email, user_id, name, printer, pages, file_name, color, copies, du
     
 
 
-def print_pdf(file_path, printer_name, copies=1, duplex=True, color=False):
+def print_pdf(file_path, printer_name, copies=1, duplex=True, color=False, scale=False):
     if copies > config.getint('PRINT_CONFIG', 'MAX_COPIES'):
         copies = config.getint('PRINT_CONFIG', 'MAX_COPIES')
     elif copies < 1:
@@ -166,7 +166,7 @@ def print_pdf(file_path, printer_name, copies=1, duplex=True, color=False):
         sumatra,
         "-print-to", printer_name,
         "-silent",
-        "-print-settings", f"scale,paper=letter,{copies}x" + (",duplex" if duplex else ",simplex") +  (",monochrome" if not color else ",color"),
+        "-print-settings", f"paper=letter,{copies}x" + (",duplex" if duplex else ",simplex") +  (",monochrome" if not color else ",color") + (",scale" if scale else ",noscale,center"),
         file_path,
     ]
     p = subprocess.run(cmd, capture_output=True, text=True)
@@ -327,6 +327,7 @@ def index():
         file.save(file_path)
         printer_name = request.form['printer']
         color = request.form.get('color', 'off') == 'true'
+        scale = request.form.get('scale', 'off') == 'true'
         app.logger.info(f"Printing file: {file_path} to printer: {printer_name}")
         pages = get_page_count(file_path) if file_path.lower().endswith('.pdf') else 1
 
@@ -346,7 +347,7 @@ def index():
         if pages == 1:
             duplex = False
 
-        print_pdf(file_path, printer_name, copies=copies, duplex=duplex, color=color)
+        print_pdf(file_path, printer_name, copies=copies, duplex=duplex, color=color, scale=scale)
 
 
         log_print(

@@ -80,6 +80,11 @@
               v-model="inColor"
               label="Print in Color"
             ></v-switch>
+            <input type="hidden" id="scale" name="scale" value="" v-model="scale">
+            <v-switch
+              v-model="scale"
+              label="Scale to Page"
+            ></v-switch>
             <!-- <label for="doubleSided">Double-sided</label><br> -->
             <br>
             <input type="hidden" id="copies" name="copies" v-model="copies">
@@ -116,6 +121,7 @@
           email: '',
           requiredEmail: false,
           inColor: true,
+          scale: true,
           copies: 1,
           token: '',
           items: [

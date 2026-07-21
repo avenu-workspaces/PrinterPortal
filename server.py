@@ -304,7 +304,7 @@ def index():
         token = request.form.get('token', '')
 
         if not file.filename.split('.')[-1] in accepted_extensions:
-            return render_template('index.html', error_message="File type must be one of the following " + ', '.join(accepted_extensions))
+            return render_template('index.html', max_copies=config['PRINT_CONFIG']['MAX_COPIES'], error_message="File type must be one of the following " + ', '.join(accepted_extensions))
 
         duplex = request.form.get('duplex', 'off') == 'true'
         app.logger.info(f"Received print job: {file.filename}, copies: {copies}, duplex: {duplex}")
@@ -318,7 +318,7 @@ def index():
             app.logger.info(f"User has plans: {has_plans}, email auth enabled: {config['SERVER']['ENABLE_EMAIL_AUTH']}, email provided: {'email' in request.form}, valid email: {is_valid_email(request.form['email']) if 'email' in request.form else 'N/A'}")
         if not has_plans:
             app.logger.info("User does not have a plan, rejecting print job")
-            return render_template('index.html', error_message="You do not have an active plan to print with. Please contact help@avenuworkspaces.com to purchase a plan.")
+            return render_template('index.html', max_copies=config['PRINT_CONFIG']['MAX_COPIES'], error_message="You do not have an active plan to print with. Please contact help@avenuworkspaces.com to purchase a plan.")
         
         create_user_if_not_exists(user_info['id'], user_info['name'], user_info['email'])
 
@@ -337,7 +337,7 @@ def index():
         
         if quota_status in ['error', 'no_quota']:
             app.logger.info("User quota exceeded, rejecting print job")
-            return render_template('index.html', error_message="Your printing quota has been exceeded. Please contact help@avenuworkspaces.com to request additional quota.")
+            return render_template('index.html', max_copies=config['PRINT_CONFIG']['MAX_COPIES'], error_message="Your printing quota has been exceeded. Please contact help@avenuworkspaces.com to request additional quota.")
         
         if quota_status == 'free_quota_exceeded':
             warning_message="You have exceeded your free printing quota. Please contact help@avenuworkspaces.com to request additional quota."
